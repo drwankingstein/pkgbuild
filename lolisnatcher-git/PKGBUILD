@@ -1,0 +1,41 @@
+# Maintainer: DRW <drwankingstein@gmail.com>
+
+pkgname=lolisnatcher-git
+pkgver=2.2.5.r82.g8ed5b51
+pkgrel=1
+pkgdesc='Booru Viewer'
+arch=('x86_64')
+url='https://github.com/NO-ob/LoliSnatcher_Droid.git'
+license=('AGPL-3.0')
+makedepends=('git')
+depends=('flutter' 'vlc')
+optdepends=()
+provides=('lolisnatcher')
+conflicts=()
+
+source=("git+https://github.com/NO-ob/LoliSnatcher_Droid.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "LoliSnatcher_Droid"
+  git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+flutter doctor
+}
+
+build() {
+  cd "LoliSnatcher_Droid"
+  flutter build linux
+}
+
+package() {
+  cd "LoliSnatcher_Droid"
+  mkdir -p "${pkgdir}/usr/share/lolisnatcher"
+  mkdir -p "${pkgdir}/usr/bin"
+
+  cp -fr build/linux/x64/release/bundle/* "${pkgdir}/usr/share/lolisnatcher"
+  ln -sr "${pkgdir}/usr/share/lolisnatcher/lolisnatcher" "${pkgdir}/usr/bin/lolisnatcher"
+  chmod 755 "${pkgdir}/usr/bin/lolisnatcher"
+}
